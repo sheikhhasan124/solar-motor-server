@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors")
 require("dotenv").config();
+const jwt = require("jsonwebtoken")
 const port = process.env.PORT || 5000;
 
 // middle ware
@@ -20,6 +21,25 @@ async function run(){
 
         const productCollections = client.db("solar_motor").collection("products");
         const reviewCollections = client.db("solar_motor").collection("review");
+        const userCollections = client.db("solar_motor").collection("user");
+
+         //registrate user email save in db ...and make jwt
+         app.put("/user/:email", async (req, res) => {
+            const email = req.params.email;
+            const user = req.body;
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updateDoc = {
+              $set: user,
+            };
+            const result = await userCollections.updateOne(filter, updateDoc, options);
+            const token = jwt.sign(
+              { email: email },
+              process.env.ACCESS_TOKEN_SECRETE,
+              { expiresIn: "1h" }
+            );
+            res.send({ result, token });
+          });
 
         // all products get api
         app.get('/product', async(req,res)=>{
