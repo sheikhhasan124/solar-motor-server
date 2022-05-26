@@ -22,8 +22,9 @@ async function run(){
         const productCollections = client.db("solar_motor").collection("products");
         const reviewCollections = client.db("solar_motor").collection("review");
         const userCollections = client.db("solar_motor").collection("user");
+        const orderCollections = client.db("solar_motor").collection("myOrder");
 
-         //registrate user email save in db ...and make jwt
+        //  registrate user email save in db ...and make jwt
          app.put("/user/:email", async (req, res) => {
             const email = req.params.email;
             const user = req.body;
@@ -36,7 +37,7 @@ async function run(){
             const token = jwt.sign(
               { email: email },
               process.env.ACCESS_TOKEN_SECRETE,
-              { expiresIn: "1h" }
+              { expiresIn: "1d" }
             );
             res.send({ result, token });
           });
@@ -49,8 +50,8 @@ async function run(){
         })
         // oen product get api
         app.get('/product/:id', async(req,res)=>{
-            const id = req.params.id
-            const query = {_id:ObjectId(id)}
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)}
             const products = await productCollections.findOne(query);
             res.send(products)
         })
@@ -59,6 +60,11 @@ async function run(){
             const query = {}
             const review = await reviewCollections.find(query).toArray();
             res.send(review)
+        })
+        app.post('/myOrder',async(req,res)=>{
+            const order = req.body;
+            const result = await orderCollections.insertOne(order)
+             res.send({success:true, result})
         })
 
     }finally{
