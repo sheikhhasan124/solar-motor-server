@@ -44,6 +44,19 @@ async function run(){
         const orderCollections = client.db("solar_motor").collection("myOrder");
         const paymentCollections = client.db("solar_motor").collection("payment");
 
+
+         // verify admin middleware
+    const verifyAdmin = async(req,res,next)=>{
+      const requester = req.decoded.email;
+      const requesterAccount = await userCollections.findOne({ email: requester,});
+      if (requesterAccount.role === "admin") {
+          next()
+      }
+      else{
+        res.status(403).send({ message: "forbidden" });
+      }
+    }
+
         //  registrate user email save in db ...and make jwt
          app.put("/user/:email", async (req, res) => {
             const email = req.params.email;
@@ -62,6 +75,28 @@ async function run(){
             res.send({ result, token });
           });
 
+                // for user page
+        app.get("/user", async (req, res) => {
+          const users = await userCollections.find().toArray();
+          res.send(users);
+        });
+          // api for making a user admin and only admin can meke others admin
+        app.put("/user/admin/:email", verifiJwt,verifyAdmin, async (req, res) => {
+          const email = req.params.email;
+          const filter = { email: email };
+          const updateDoc = {
+            $set: { role: "admin" },
+          };
+          const result = await userCollections.updateOne(filter, updateDoc);
+          res.send(result);
+      });
+          // api for is login user admin or not
+      app.get('/admin/:email',async(req,res)=>{
+        const email = req.params.email;
+        const user = await userCollections.findOne({email:email});
+        const isAdmin = user.role === 'admin';
+        res.send({admin:isAdmin})
+      })  
         // all products get api
         app.get('/product', async(req,res)=>{
             const query = {}
