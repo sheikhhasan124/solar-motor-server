@@ -116,6 +116,11 @@ async function run(){
             const review = await reviewCollections.find(query).toArray();
             res.send(review)
         })
+        app.post('/review',async(req,res)=>{
+            const review = req.body;
+            const result = await reviewCollections.insertOne(review)
+             res.send({success:true, result})
+        })
         app.post('/myOrder',async(req,res)=>{
             const order = req.body;
             const result = await orderCollections.insertOne(order)
