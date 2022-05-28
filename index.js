@@ -122,6 +122,13 @@ async function run(){
             const products = await productCollections.findOne(query);
             res.send(products)
         })
+        app.delete('/product/:id', async(req,res)=>{
+          const id = req.params.id;
+          const query = {_id: ObjectId(id)}
+          const result = await productCollections.deleteOne(query)
+          res.send(result)
+
+        })
         // all review get api
         app.get('/review', async(req,res)=>{
             const query = {}
@@ -223,6 +230,23 @@ async function run(){
              const filter = {email:email}
              const result = await userInfCollections.findOne(filter)
              res.send(result)
+          })
+
+          app.patch('/userinf/:email', async(req,res)=>{
+            const email = req.params.email;
+            const profile = req.body;
+            const filter = {email:email}
+            const updateDoc = {
+              $set : {
+                
+                education:profile.education,
+                location:profile.location,
+                link:profile.link
+              }
+            }
+            
+            const update = await userInfCollections.updateOne(filter, updateDoc)
+            res.send(updatedBooking)
           })
           
         
