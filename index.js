@@ -180,6 +180,19 @@ async function run(){
       const updatedBooking = await orderCollections.updateOne(filter, updateDoc)
       res.send(updateDoc)
     })
+    app.patch('/myordershift/:id', async(req,res)=>{
+      const id = req.params.id;
+      const payment = req.body;
+      const filter = {_id:ObjectId(id)}
+      const updateDoc = {
+        $set : {
+          status: payment.status
+        }
+      }
+      
+      const updatedBooking = await orderCollections.updateOne(filter, updateDoc)
+      res.send(updatedBooking)
+    })
 
            //api fro stripe 
            app.post('/create-payment-intent', async(req,res)=>{
