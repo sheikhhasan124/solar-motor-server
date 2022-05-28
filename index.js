@@ -138,6 +138,12 @@ async function run(){
             const result = await orderCollections.insertOne(order)
              res.send({success:true, result})
         })
+        app.get("/myorder",async(req,res)=>{
+          const query = {}
+          const result = await orderCollections.find(query).toArray()
+          res.send(result)
+        })
+        // get my order by user email
         app.get("/myorder", verifiJwt, async (req, res) => {
             const email = req.query.email;
             const decodedEmail = req.decoded.email;
@@ -158,7 +164,7 @@ async function run(){
             res.send(order)
           })
 
-           // update booking
+           // update 
     app.patch('/myorder/:id', async(req,res)=>{
       const id = req.params.id;
       const payment = req.body;
@@ -166,7 +172,8 @@ async function run(){
       const updateDoc = {
         $set : {
           paid: true,
-          transectionId: payment.transectionId
+          transectionId: payment.transectionId,
+          status: payment.status
         }
       }
       const result = await paymentCollections.insertOne(payment)
