@@ -43,6 +43,7 @@ async function run(){
         const userCollections = client.db("solar_motor").collection("user");
         const orderCollections = client.db("solar_motor").collection("myOrder");
         const paymentCollections = client.db("solar_motor").collection("payment");
+        const userInfCollections = client.db("solar_motor").collection("userInf");
 
 
          // verify admin middleware
@@ -56,7 +57,7 @@ async function run(){
         res.status(403).send({ message: "forbidden" });
       }
     }
-
+       
         //  registrate user email save in db ...and make jwt
          app.put("/user/:email", async (req, res) => {
             const email = req.params.email;
@@ -80,6 +81,12 @@ async function run(){
           const users = await userCollections.find().toArray();
           res.send(users);
         });
+        app.get('/user/:email',async(req,res)=>{
+          const email = req.params.email;
+          const filter = {email:email}
+          const result = await userCollections.findOne(filter)
+           res.send(result)
+        })
           // api for making a user admin and only admin can meke others admin
         app.put("/user/admin/:email", verifiJwt,verifyAdmin, async (req, res) => {
           const email = req.params.email;
@@ -102,6 +109,11 @@ async function run(){
             const query = {}
             const products = await productCollections.find(query).toArray();
             res.send(products)
+        })
+        app.post('/product', async(req,res)=>{
+          const product = req.body
+          const result = await productCollections.insertOne(product)
+          res.send(result)
         })
         // oen product get api
         app.get('/product/:id', async(req,res)=>{
@@ -181,6 +193,18 @@ async function run(){
               const result = await orderCollections.deleteOne(filter)
               res.send(result)
           })
+          app.post('/userinf',async(req,res)=>{
+            const inf = req.body
+            const result = await userInfCollections.insertOne(inf)
+            res.send({success:true, result})
+          })
+          app.get('/userinf/:email',async(req,res)=>{
+             const email = req.params.email;
+             const filter = {email:email}
+             const result = await userInfCollections.findOne(filter)
+             res.send(result)
+          })
+          
         
     }finally{
         // await client.close();
