@@ -4,6 +4,11 @@ The wevsire link
 
 ### what feature (API) has there
 
+- Implemented a full-stack B2B website to purchase tolls from manufacturers.
+-  Users can order as they can where a user can see his/her order and can add review
+-  An admin can add products, can manage used orders, fully protected by JWT.
+- Applied stripe payment gateway to buy a service product.
+
 - jwt create
 - jwt verify
 - addmin create 
